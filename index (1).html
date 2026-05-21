@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P@T - Digitalni Školski Časopis</title>
+    <style>
+        :root {
+            --primary-color: #1a2a3a;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-muted: #7f8c8d;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* Header Styling */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 5px solid var(--accent-color);
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        header h1 span {
+            color: var(--accent-color);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        /* Navigation / Category Filter */
+        nav {
+            background-color: var(--secondary-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 0.5rem;
+        }
+
+        .filter-btn {
+            background: none;
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            margin: 0.25rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        /* Main Layout */
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Article Card Styling */
+        .article-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+        }
+
+        .card-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            background-color: #eaedd1;
+            overflow: hidden;
+        }
+
+        .card-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .article-card:hover .card-image-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .category-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.35rem 0.8rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-content h2 {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .card-content h3 {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .card-excerpt {
+            color: #555;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .read-more-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .read-more-btn:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* Modal / Full Article View Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 2rem 1rem;
+        }
+
+        .modal-content {
+            background-color: white;
+            max-width: 850px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: modalSlide 0.4s ease;
+        }
+
+        @keyframes modalSlide {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 2010;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: var(--accent-color);
+        }
+
+        .modal-hero {
+            position: relative;
+            height: 380px;
+            background-color: var(--primary-color);
+        }
+
+        .modal-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.85));
+            padding: 2rem;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 2.5rem;
+            font-size: 1.1rem;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        .modal-body p {
+            margin-bottom: 1.2rem;
+        }
+
+        .modal-meta {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Custom Content Addons */
+        .highlight-box {
+            background-color: #f0f7fc;
+            border-left: 5px solid var(--primary-color);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        /* Q&A Intervju lekcija */
+        .qa-section .question {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 1.15rem;
+            border-left: 3px solid var(--accent-color);
+            padding-left: 10px;
+        }
+
+        .qa-section .answer {
+            margin-bottom: 1.5rem;
+            padding-left: 15px;
+        }
+
+        /* DA / NE Tablice */
+        .table-responsive {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-table th {
+            padding: 1rem;
+            text-align: left;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .comparison-table th.da-header { background-color: var(--success-color); }
+        .comparison-table th.ne-header { background-color: var(--accent-color); }
+
+        .comparison-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        /* Photo Galleries */
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .gallery-item {
+            height: 140px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            border-color: var(--accent-color);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Gastro Top List item ranking */
+        .gastro-item {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .gastro-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .gastro-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .gastro-scores {
+            font-size: 0.9rem;
+            background: #f1f5f9;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        .stars {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+
+        /* Stat Bars (for Energy drinks) */
+        .stat-container {
+            background: #fdfdfd;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .stat-row {
+            margin-bottom: 1rem;
+        }
+
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .stat-bar-bg {
+            background-color: #e2e8f0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+        }
+
+        .stat-bar-fill.daily { background-color: #e74c3c; width: 15%; }
+        .stat-bar-fill.weekly { background-color: #3498db; width: 30%; }
+        .stat-bar-fill.exam { background-color: #f1c40f; width: 5%; }
+        .stat-bar-fill.none { background-color: #2ecc71; width: 50%; }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 4rem;
+            border-top: 4px solid var(--accent-color);
+        }
+
+        footer p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2.2rem; }
+            .modal-body { padding: 1.5rem; }
+            .modal-hero { height: 250px; }
+            .articles-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header časopisa -->
+    <header>
+        <h1>P<span>@</span>T</h1>
+        <p>Školske novosti, zanimljivosti i učeničke priče</p>
+    </header>
+
+    <!-- Navigacijski filter po kategorijama -->
+    <nav>
+        <div class="nav-container">
+            <button class="filter-btn active" onclick="filterCategory('sve', this)">Sve objave</button>
+            <button class="filter-btn" onclick="filterCategory('matematika', this)">Matematika & Kreativnost</button>
+            <button class="filter-btn" onclick="filterCategory('iza-klupa', this)">Iza klupa</button>
+            <button class="filter-btn" onclick="filterCategory('erasmus', this)">Erasmus</button>
+            <button class="filter-btn" onclick="filterCategory('intervju', this)">Intervjui</button>
+            <button class="filter-btn" onclick="filterCategory('projekti', this)">Projekti & Kultura</button>
+        </div>
+    </nav>
+
+    <!-- Glavna mreža s člancima -->
+    <main>
+        <div class="articles-grid" id="articles-container">
+            
+            <!-- ČLANAK 1: Klokan -->
+            <article class="article-card" data-category="matematika">
+                <div class="card-image-wrapper">
+                    <span class="category-badge">Matematika</span>
+                    <img src="images.jpg" alt="Natjecanje Klokan">
+                </div>
+                <div class="card-content">
+                    <h2>Točno u podne - obračun iz matematike</h2>
+                    <h3>Uspjeh našeg učenika Josipa Križanca na natjecanju KLOKAN</h3>
+                    <p class="card-excerpt">Matematičko natjecanje KLOKAN održano je 19. ožujka 2026. godine točno u podne. Naš Josip Križanec ostvario je izniman uspjeh...</p>
+                    <div class="card-footer">
+                        <span>Autor: Patrik Žejinski</span>
+                        <button class="read-more-btn" onclick="openArticle(1)">Pročitaj</button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ČLANAK 2: Glas učenika -->
+            <article class="article-card" data-category="iza-klupa">
+                <div class="card-image-wrapper">
+                    <span class="category-badge">Iza klupa</span>
+                    <img src="{FDCCFB68-A791-4365-8A26-33F019AAF1B7}.png" alt="Glas učenika">
+                </div>
+                <div class="card-content">
+                    <h2>Glas učenika: Nastava kakvu želimo/ne želimo</h2>
+                    <h3>Što mislimo o trenutačnim metodama i rasporedu?</h3>
+                    <p class="card-excerpt">Kroz veliku anketu prikupili smo glasove učenika o tome na koji način žele provoditi vrijeme u učionicama, a što im stvara opterećenje...</p>
+                    <div class="card-footer">
+                        <span>Autor: Uredništvo</span>
+                        <button class="read-more-btn" onclick="openArticle(2)">Pročitaj</button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ČLANAK 3: Erasmus -->
+            <article class="article-card" data-category="erasmus">
+                <div class="card-image-wrapper">
+                    <span class="category-badge">Erasmus</span>
+                    <img src="Veronika 3.jpg" alt="Erasmus Italija Portugal">
+                </div>
+                <div class="card-content">
+                    <h2>ERASMUS mobilnost: Pred nama se otvara svijet</h2>
+                    <h3>Osvrt Veronike Bešen o posjetu Italiji i Portugalu</h3>
+                    <p class="card-excerpt">Erasmus je iznimno iskustvo za koje vjerujem da bi svatko trebao doživjeti, od putovanja u različite zemlje do upoznavanja ljudi...</p>
+                    <div class="card-footer">
+                        <span>Autorica: Veronika Bešen</span>
+                        <button class="read-more-btn" onclick="openArticle(3)">Pročitaj</button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ČLANAK 4: Užina -->
+            <article class="article-card" data-category="iza-klupa">
+                <div class="card-image-wrapper">
+                    <span class="category-badge">Iza klupa</span>
+                    <img src="IMG_0792.jpeg" alt="Dobra užina za malo novca">
+                </div>
+                <div class="card-content">
+                    <h2>Dobro jesti za malo novca</h2>
+                    <h3>TOP LISTA mjesta za dobru užinu oko škole</h3>
+                    <p class="card-excerpt">Okolica škole bogata je ponudom brze hrane i za svakoga se nađe ponešto. Sastavili smo listu pet provjerenih lokacija...</p>
+                    <div class="card-footer">
+                        <span>Autor: Mislav Karoglan</span>
+                        <button class="read-more-btn" onclick="openArticle(4)">Pročitaj</button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ČLANAK 5: Energetska pića -->
+            <article class="article-card" data-category="iza-klupa">
+                <div class="card-image-wrapper">
+                    <span class="category-badge">Iza klupa</span>
+                    <img src="GettyImages-1025255964.jpg" alt="Energetska pića">
+                </div>
+                <div class="card-content">
+                    <h2>Energetsko piće - (ne)zdravi napitak</h2>
+                    <h3>Statistika i rezultati ankete o konzumaciji kofeina</h3>
+                    <p class="card-excerpt">Ministarstvo zdravstva izrađuje zakon kojim bi se ograničila prodaja, a mi smo provjerili kakva je realna situacija u našem razredu...</p>
+                    <div class="card-footer">
+                        <span>P. Žejinski i L. Štrok</span>
+                        <button class="read-more-btn" onclick="openArticle(5)">Pročitaj</button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ČLANAK 6: Najprofesor -->
+            <article class="article-card" data-category="intervju">
+                <div class="card-image-wrapper">
+                    <span class="category-badge">Intervjui</span>
+                    <img src="{49D3CF66-F233-4D20-B791-029AE6F2D89B}.jpg" alt="Najprofesor Danijel Eskeričić">
+                </div>
+                <div class="card-content">
+                    <h2>NAJPROFESOR: Danijel Eskeričić</h2>
+                    <h3>"Baš je chill!" – Veliki intervju o elektrotehnici i Arduinu</h3>
+                    <p class="card-excerpt">Proveli smo izbor i titulu najprofesora uvjerljivo je osvojio profesor Danijel Eskeričić. Donosimo razgovor o shemama i projektima...</p>
+                    <div class="card-footer">
+                        <span>M. Drobnjak, J. Križanec, J. Đebro</span>
+                        <button class="read-more-btn" onclick="openArticle(6)">Pročitaj</button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ČLANAK 7: Kreativnost u školi -->
+            <article class="article-card" data-category="matematika">
+                <div class="card-image-wrapper">
+                    <span class="category-badge">Matematika</span>
+                    <img src="Cvjetni hodnik.jpg" alt="Kreativnost u školi">
+                </div>
+                <div class="card-content">
+                    <h2>Kreativnost u školi: I u kreativnosti ima matematike</h2>
+                    <h3>Intervju s profesoricom Jasnom Sušac-Peičić</h3>
+                    <p class="card-excerpt">Razgovarali smo s profesoricom matematike koja sa svojom vrijednom kreativnom ekipom svakodnevno uljepšava naš školski prostor...</p>
+                    <div class="card-footer">
+                        <span>Uredništvo portala</span>
+                        <button class="read-more-btn" onclick="openArticle(7)">Pročitaj</button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ČLANAK 8: Film -->
+            <article class="article-card" data-category="projekti">
+                <div class="card-image-wrapper">
+                    <span class="category-badge">Projekti & Kultura</span>
+                    <img src="Slika - film.jpg" alt="Film How it used to be">
+                </div>
+                <div class="card-content">
+                    <h2>FILM: "How it used to be" osvojio nagrade</h2>
+                    <h3>Sjajan uspjeh filma naših učenika na TEC natjecanju</h3>
+                    <p class="card-excerpt">Naš kratki film osvojio je visoko 2. mjesto stručnog žirija i uvjerljivo 1. mjesto prema glasovima vjerne publike...</p>
+                    <div class="card-footer">
+                        <span>Autor: Patrik Žejinski</span>
+                        <button class="read-more-btn" onclick="openArticle(8)">Pročitaj</button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ČLANAK 9: AI / UI -->
+            <article class="article-card" data-category="projekti">
+                <div class="card-image-wrapper">
+                    <span class="category-badge">Projekti & Kultura</span>
+                    <img src="240_F_485241075_B97HJPtsCLaHVOMGBtNyQm6LzzZtGUmh.jpg" alt="Umjetna Inteligencija u školi">
+                </div>
+                <div class="card-content">
+                    <h2>UI/AI – prednosti i mane u obrazovanju</h2>
+                    <h3>Inteligentno s umjetnom inteligencijom!</h3>
+                    <p class="card-excerpt">Umjetna inteligencija nije „šalabahter“, nego nevjerojatna mogućnost učenja i osobnog razvoja ako se koristi pravilno...</p>
+                    <div class="card-footer">
+                        <span>Autorica: Tia Genzić</span>
+                        <button class="read-more-btn" onclick="openArticle(9)">Pročitaj</button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ČLANAK 10: ŠIZ -->
+            <article class="article-card" data-category="intervju">
+                <div class="card-image-wrapper">
+                    <span class="category-badge">Intervjui</span>
+                    <img src="download.jpg" alt="ŠIZ Logo">
+                </div>
+                <div class="card-content">
+                    <h2>ŠIZ - mali predmet koji donosi velike promjene</h2>
+                    <h3>Učenici kroz aktivno djelovanje rješavaju stvarne probleme</h3>
+                    <p class="card-excerpt">U našoj školi već četiri godine provodi se ŠIZ - aktivnost koja učenicima daje sjajnu priliku da izađu iz okvira klasične teorije...</p>
+                    <div class="card-footer">
+                        <span>Autori: T. Genzić i D. Ćuća</span>
+                        <button class="read-more-btn" onclick="openArticle(10)">Pročitaj</button>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+    </main>
+
+    <!-- MODALNI PROZOR ZA PRIKAZ PUNOG ČLANKA -->
+    <div id="articleModal" class="modal">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div class="modal-content">
+            <div class="modal-hero" id="modalHero">
+                <!-- Dinamička slika -->
+                <div class="modal-hero-overlay">
+                    <h1 id="modalTitle">Naslov</h1>
+                </div>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dinamički tekst članka -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 P@T Digitalni Školski Časopis. Sva prava pridržana.</p>
+        <p style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.6;">Kreirano s ponosom od strane učenika i profesora.</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIKA -->
+    <script>
+        // Svi podaci članaka integrirani unutar baze podataka u kodu
+        const articlesData = {
+            1: {
+                title: "Točno u podne - obračun iz matematike",
+                heroImage: "images.jpg",
+                content: `
+                    <div class="highlight-box">Uspjeh našeg učenika Josipa Križanca na Matematičkom natjecanju KLOKAN!</div>
+                    <p>Matematičko natjecanje KLOKAN održano je 19. ožujka 2026. točno u podne. U Republici Hrvatskoj je u istom trenutku sudjelovalo čak 36.113 učenika iz 650 osnovnih i 89 srednjih škola.</p>
+                    <p>Test se pisao punih 75 minuta u školskoj učionici A1, a maksimalan broj bodova bio je 100. Svi smo nestrpljivo iščekivali rezultate, koji su u školu stigli tek 29. travnja 2026.</p>
+                    <p>Iz naše se škole natjecalo dvadesetak hrabrih učenika, a naš <strong>Josip Križanec</strong> ostvario je nevjerojatan rezultat i ušao u <strong>top 10 posto</strong> najboljih matematičara u cijeloj državi! Čestitamo Josipu na ovom iznimnom plasmanu!</p>
+                    
+                    <h4 style="margin-top:20px; margin-bottom:10px;">Fotografija s natjecanja:</h4>
+                    <div style="max-width:400px; border-radius:8px; overflow:hidden; border:2px solid #e2e8f0;">
+                        <img src="josip.jpg" alt="Josip Križanec" style="width:100%; display:block;">
+                    </div>
+                    
+                    <div class="modal-meta">
+                        <span>Autor: Patrik Žejinski</span>
+                        <span>Datum natjecanja: Proljeće 2026.</span>
+                    </div>
+                `
+            },
+            2: {
+                title: "Glas učenika: Nastava kakvu želimo/ne želimo",
+                heroImage: "{FDCCFB68-A791-4365-8A26-33F019AAF1B7}.png",
+                content: `
+                    <p>Proveli smo opsežno istraživanje među učenicima različitih razreda kako bismo saznali kakva bi trebala izgledati idealna nastava, a koje metode bismo pod hitno trebali promijeniti ili u potpunosti izbaciti iz školskog rasporeda. Rezultate i jasne poruke prenosimo u nastavku:</p>
+                    
+                    <div class="table-responsive">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th class="da-header">✔ DA nastavi kakvu ŽELIMO</th>
+                                    <th class="ne-header">❌ NE nastavi kakvu NE ŽELIMO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>• praktičnoj nastavi i vježbama</td>
+                                    <td>• suhoparnoj teoretskoj nastavi</td>
+                                                    </tr>
+                                <tr>
+                                    <td>• samostalnom programiranju ili spajanju mreže</td>
+                                    <td>• klasičnim pisanim provjerama znanja</td>
+                                </tr>
+                                <tr>
+                                    <td>• izravnoj suradnji s tvrtkama iz struke</td>
+                                    <td>• tjednu opterećenom velikim brojem testova</td>
+                                </tr>
+                                <tr>
+                                    <td>• uvažavanju mišljenja učenika (upitnici/razgovori)</td>
+                                    <td>• dnevnom rasporedu ispunjenom samo teškim predmetima</td>
+                                </tr>
+                                <tr>
+                                    <td>• kreativnim projektnim zadatcima</td>
+                                    <td>• nastavi ex cathedra (samo slušanje i zapisivanje)</td>
+                                </tr>
+                                <tr>
+                                    <td>• fleksibilnijem i prilagođenijem rasporedu sati</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p style="font-style: italic; color: #666; font-size: 0.95rem; text-align: center; margin-top: 15px;">Grafički prikaz strukturiran prema službenom učeničkom zahtjevu 1. razreda.</p>
+                    
+                    <div class="modal-meta">
+                        <span>Autor: Predstavnici učenika</span>
+                        <span>Kategorija: Iza klupa</span>
+                    </div>
+                `
+            },
+            3: {
+                title: "ERASMUS mobilnost – Pred nama se otvara svijet",
+                heroImage: "Veronika 3.jpg",
+                content: `
+                    <div class="highlight-box">Naša Veronika Bešen, učenica 3.a2 razreda, posjetila je Italiju i Portugal te napisala svoje bogate dojmove o tom nezaboravnom iskustvu.</div>
+                    <p>Erasmus je iznimno iskustvo za koje vjerujem da bi svatko trebao doživjeti, od putovanja u različite zemlje do upoznavanja ljudi drukčijih nacionalnosti, prilagođavanja različitim kulturama i običajima. Erasmus me naučio mnogim stvarima koje neću zaboraviti i pomogao mi je pronaći osobe s kojima nikad nisam mislila da ću se zbližiti.</p>
+                    <p>Nikada prije zapravo nisam kročila izvan Hrvatske, osim dva jednodnevna izleta u Graz i Veneciju. No, kada sam na stranici škole prošle godine naišla na prijavu za putovanje učenika u Italiju, bilo je kao da mi se otvorio cijeli svijet mogućnosti.</p>
+                    <p><strong>Nezaboravni tjedan u Italiji:</strong> Prošle godine provela sam tjedan dana u Italiji na razmjeni učenika – program neformalnog obrazovanja i interkulturalnog učenja koji omogućuje učenicima da provedu određeno vrijeme u stranoj zemlji, pohađaju tamošnju školu i žive s lokalnom obitelji. Bile su tu raznolike obrazovne, ali i kulturne aktivnosti. Primjerice, pohađanje škole u kojoj je profesor povijesti razredu objašnjavao Domovinski rat u Hrvatskoj! Posjetila sam obližnje gradove, Sorrento i Napulj, te ruševine Herkulaneja, gdje su nas domaćini poučili o njegovoj povijesti. Naučila sam sve i o procesu proizvodnje limoncella u najboljem sorrentskom vrtu limuna te kako ispeći tradicionalnu talijansku pizzu, a darovali su nam i originalni recept. Predivni i uzbudljivi krajolici, pogled na čisto more te mješavina antičke, barokne i suvremene arhitekture nisu dopustili da mi ni na trenutak bude dosadno.</p>
+                    <p><strong>Stručna praksa u Portugalu:</strong> Ove godine provela sam dva tjedna u Portugalu na stručnoj praksi. Boravila sam u hotelu koji je svako jutro nudio doručak, a tvrtka je organizirala prijevoz do prakse gdje sam radila od jutra do ranog poslijepodneva. Ručak je također bio plaćen, no mogla sam platiti vlastiti ručak i večeru iz džeparca koji smo dobili od Erasmus organizacije. Imali smo malo manje vremena za svakodnevno istraživanje zemlje, ali budući da je putovanje trajalo duže, vikendom smo obilazili druge gradove. Na praksi sam stekla korisna znanja unutar svoje struke. Svaki dan imali smo slobodno vrijeme koje smo iskoristili za obilazak grada i druženje uz posjećivanje restorana i kafića.</p>
+                    <p>Razmjena učenika u Italiji dala mi je mogućnost educiranja o drugoj državi na različite načine pokazujući kako se povezati na međunarodnoj razini. Na stručnoj praksi u Portugalu također sam dobila mogućnost educiranja, no ona mi je dodatno omogućila stjecanje radne navike te priliku da se povežem s ljudima iz svoje škole.</p>
+                    
+                    <h4 style="margin-top:25px; margin-bottom:10px;">Galerija fotografija s mobilnosti:</h4>
+                    <div class="gallery-container">
+                        <div class="gallery-item"><img src="Veronika 3.jpg" alt="Veronika Italija"></div>
+                        <div class="gallery-item"><img src="Veronika - slika.jpg" alt="Izrada pizze"></div>
+                        <div class="gallery-item"><img src="Veronika - slika 2.jpg" alt="Sorrento obala"></div>
+                    </div>
+
+                    <div class="modal-meta">
+                        <span>Autorica: Veronika Bešen, 3.a2</span>
+                        <span>Program: Erasmus+ program mobilnosti</span>
+                    </div>
+                `
+            },
+            4: {
+                title: "Dobro jesti za malo novca - Gastro Vodič",
+                heroImage: "IMG_0792.jpeg",
+                content: `
+                    <div class="highlight-box">Ovo je ekskluzivna lista pet provjerenih adresa koju je detaljno sastavio Mislav Karoglan, učenik 1.b1 razreda.</div>
+                    <p>Okolica naše škole iznimno je bogata ponudom brze hrane i za svakoga se uistinu nađe ponešto. Glavni problem nam je jedino kratkoća velikoga odmora koji traje samo petnaest minuta, pa je brzina usluge ključna stvar, ali to je tema za neku sasvim drugu priču. Pogledajte ocjene:</p>
+                    
+                    <div class="gastro-item">
+                        <div class="gastro-header">
+                            <span class="gastro-title">1. Mlinar (Harambašićeva 31)</span>
+                            <span class="gastro-scores">Okus: <span class="stars">3.5/5</span> | Cijena: <span class="stars">2/5</span></span>
+                        </div>
+                        <p><strong>Ukupni dojam cijene i količine:</strong> <span class="stars">3.5/5</span></p>
+                        <p><em>Komentar:</em> Fina i uvijek dostupna topla hrana, ali za naš učenički džep ipak malo preskupa opcija svakoga dana.</p>
+                    </div>
+
+                    <div class="gastro-item">
+                        <div class="gastro-header">
+                            <span class="gastro-title">2. Zlatno zrno (Harambašićeva 33)</span>
+                            <span class="gastro-scores">Okus: <span class="stars">4/5</span> | Cijena: <span class="stars">4/5</span></span>
+                        </div>
+                        <p><strong>Ukupni dojam cijene i količine:</strong> <span class="stars">4/5</span></p>
+                        <p><em>Komentar:</em> Fino i uistinu nije preskupo. Jako dobar izbor i ponuda za jednu lokalnu pekaru.</p>
+                    </div>
+
+                    <div class="gastro-item">
+                        <div class="gastro-header">
+                            <span class="gastro-title">3. Smash burger (Mije Krešića 32)</span>
+                            <span class="gastro-scores">Okus: <span class="stars">4/5</span> | Cijena: <span class="stars">2.5/5</span></span>
+                        </div>
+                        <p><strong>Ukupni dojam cijene i količine:</strong> <span class="stars">3/5</span></p>
+                        <p><em>Komentar:</em> Izuzetno ukusno, ali količina hrane koju dobiješ na kraju ipak ne odgovara u potpunosti visokoj cijeni.</p>
+                    </div>
+
+                    <div class="gastro-item">
+                        <div class="gastro-header">
+                            <span class="gastro-title">4. Konzum (Trg J. F. Kennedyja)</span>
+                            <span class="gastro-scores">Okus: <span class="stars">3/5</span> | Cijena: <span class="stars">4/5</span></span>
+                        </div>
+                        <p><strong>Ukupni dojam cijene i količine:</strong> <span class="stars">3.5/5</span></p>
+                        <p><em>Komentar:</em> Jako dobre, pristupačne cijene. Topli obroci na gastro odjelu nisu ništa spektakularno, ali su sasvim u redu za brzi veliki odmor.</p>
+                    </div>
+
+                    <div class="gastro-item">
+                        <div class="gastro-header">
+                            <span class="gastro-title">5. Urban kebab (Mije Krešića 32)</span>
+                            <span class="gastro-scores">Okus: <span class="stars">5/5</span> | Cijena: <span class="stars">4/5</span></span>
+                        </div>
+                        <p><strong>Ukupni dojam cijene i količine:</strong> <span class="stars">4.5/5</span></p>
+                        <p><em>Komentar:</em> Najbolji izbor ako zbog obaveza nisi stigao kvalitetno ručati kod kuće. Jako dobro i obilno!</p>
+                    </div>
+
+                    <h4 style="margin-top:20px; margin-bottom:10px;">Lokacije i ambijent s terena:</h4>
+                    <div class="gallery-container">
+                        <div class="gallery-item"><img src="IMG_0792.jpeg" alt="Gastro 1"></div>
+                        <div class="gallery-item"><img src="IMG_0793.jpeg" alt="Gastro 2"></div>
+                        <div class="gallery-item"><img src="IMG_0794.jpeg" alt="Gastro 3"></div>
+                        <div class="gallery-item"><img src="IMG_0795.jpeg" alt="Gastro 4"></div>
+                    </div>
+
+                    <div class="modal-meta">
+                        <span>Autor: Mislav Karoglan, 1.b1</span>
+                        <span>Rubrika: Učenički Gastro Vodič</span>
+                    </div>
+                `
+            },
+            5: {
+                title: "Energetsko piće – (ne)zdravi napitak",
+                heroImage: "GettyImages-1025255964.jpg",
+                content: `
+                    <p>Ministarstvo zdravstva Republike Hrvatske ubrzano izrađuje novi zakon kojim bi se zakonski ograničila prodaja energetskih pića maloljetnicima, a u punom je jeku i velika nacionalna edukativna kampanja pod nazivom <strong>"Energetska pića nisu za mlada bića"</strong>.</p>
+                    <p>Energetska pića zapravo su napitci kojima se čovjek naizgled brzo razbudi i bolje koncentrira. Danas ih se nažalost može kupiti na doslovno svakom koraku, u sto različitih primamljivih okusa i u vizualno vrlo atraktivnim limenkama. Mlađa ekipa ih najčešće kupuje na putu do škole kad treba izdržati naporan dan ili kada noću predugo ostanu igrati računalne igrice.</p>
+                    <p>Glavni aktivni sastojak je kofein, koji dolazi u izrazito velikim količinama, a uz njega je dodano i brdo rafiniranog šećera koji munjevito podižu energiju u tijelu. Glavni problem je što taj osjećaj lažne snage traje vrlo kratko. Čim djelovanje popusti, u organizmu se javlja još veći umor i pad koncentracije nego prije konzumacije.</p>
+                    <p>Općenito je medicinski dokazano da ta pića nisu baš najzdravija stvar na svijetu. Ako se pretjera s konzumacijom, može doći do ubrzanog rada srca (palpitacija), teške nesanice ili jake nervoze. Znanstvena istraživanja tvrde da je organizmu potrebno čak 12 sati kako bi se u potpunosti očistio od kofeina nakon konzumacije samo jedne jedine limenke!</p>
+                    <p>Stoga se može reći da su energetski napitci korisni samo u rijetkim, iznimnim situacijama, npr. kad se stvarno mora pod svaku cijenu ostati budan zbog učenja do kasno u noć. Međutim, loše je što ekipa danas pretjeruje te ih pod školskim odmorima pije svakodnevno kao da se radi o običnom, bezopasnom soku.</p>
+                    
+                    <div class="stat-container">
+                        <h4 style="margin-bottom: 15px; color: var(--primary-color);">Rezultati ankete provedene u našem razredu:</h4>
+                        
+                        <div class="stat-row">
+                            <div class="stat-label"><span>Pije energetska pića (ukupno)</span><span>50%</span></div>
+                            <div class="stat-bar-bg"><div class="stat-bar-fill none" style="width: 50%;"></div></div>
+                        </div>
+                        <div class="stat-row">
+                            <div class="stat-label"><span>Pije ih svaki dan</span><span>15%</span></div>
+                            <div class="stat-bar-bg"><div class="stat-bar-fill daily" style="width: 15%;"></div></div>
+                        </div>
+                        <div class="stat-row">
+                            <div class="stat-label"><span>Pije ih 2-3 puta tjedno</span><span>30%</span></div>
+                            <div class="stat-bar-bg"><div class="stat-bar-fill weekly" style="width: 30%;"></div></div>
+                        </div>
+                        <div class="stat-row">
+                            <div class="stat-label"><span>Konzumira samo prije ispita/provjera</span><span>5%</span></div>
+                            <div class="stat-bar-bg"><div class="stat-bar-fill exam" style="width: 5%;"></div></div>
+                        </div>
+                    </div>
+
+                    <p>Provjerili smo i kakva je situacija s ponudom energetskih pića na školskim aparatima i kantini. <strong>Sretna vijest: U školskoj kantini nisu dostupna niti se prodaju energetska pića!</strong></p>
+                    
+                    <div class="modal-meta">
+                        <span>Autori: Patrik Žejinski i Luka Štrok</span>
+                        <span>Istraživačko novinarstvo</span>
+                    </div>
+                `
+            },
+            6: {
+                title: "NAJPROFESOR: Danijel Eskeričić",
+                heroImage: "{49D3CF66-F233-4D20-B791-029AE6F2D89B}.jpg",
+                content: `
+                    <div class="highlight-box" style="font-size: 1.3rem; text-align: center; color: var(--accent-color);">"Baš je chill!"</div>
+                    <p>Proveli smo veliki školski izbor i titulu najprofesora uvjerljivo je osvojio profesor elektrotehničke skupine predmeta <strong>Danijel Eskeričić</strong>. Tim povodom, sjeli smo s njim u labos i porazgovarali o svemu.</p>
+                    
+                    <div class="qa-section">
+                        <div class="question">Kada ste se prvi put zainteresirali za elektrotehniku?</div>
+                        <div class="answer">Prvi put sam se zainteresirao još tijekom osnovne škole jer se moj tata bavio izvođenjem električnih instalacija. To mi se jako svidjelo. Podučavao me kako se spaja utičnica, rasvjetno tijelo, prekidač i ostali elementi električne instalacije. Slijedom toga upisao sam elektrotehničku školu, a zatim i elektrotehnički fakultet.</div>
+                        
+                        <div class="question">Što Vam je u elektrotehnici najzanimljivije?</div>
+                        <div class="answer">Najzanimljivije u elektrotehnici su mi definitivno moderne električne instalacije i propulzivna Arduino elektronika.</div>
+                        
+                        <div class="question">A učenici? Kako se oni snalaze u elektrotehnici?</div>
+                        <div class="answer">Najčešći problem s kojim se učenici susreću je kako ispravno „čitati” električne sheme koje su sastavni dio strukovnih predmeta. Učenici moraju kvalitetno usvojiti teoriju koju kasnije primjenjuju na razmatranju shema. Elektrotehnika i elektronika u potpunosti se temelje na shemama. Elektrotehnika je dio svakodnevnog života. Bilo kome, pa tako i učenicima, danas je iznimno teško zamisliti život bez elektrotehničkih i elektroničkih uređaja, osobito jer se nalazimo u naprednom digitalnom dobu.</div>
+                        
+                        <div class="question">Koji biste projekt izdvojili kao najzanimljiviji?</div>
+                        <div class="answer">Najzanimljiviji projekt ili eksperiment mi je zbilja teško izdvojiti jer učenička mašta i kreativnost mogu svašta! Zaista je tako jer učenici iz godine u godinu kreiraju inovativne projekte na svoj specifičan način. No, ako moram izdvojiti nešto nesvakidašnje, neka to bude <em>električna rukavica za samoobranu (electro stun gun)</em>.</div>
+                        
+                        <div class="question">Što mislite o modernoj modularnoj nastavi?</div>
+                        <div class="answer">Praksa u elektrotehničkoj školi je, općenito gledajući, ključna i jako važna. Praktični rad učenicima nudi izvrstan razvoj psihomotoričkih sposobnosti i vještina koje mogu biti važne u daljnjem stručnom obrazovanju i životu. Učenici praktičnim radom izravno povezuju teorijska znanja i situacije iz njima bliske okoline i stvarnog života. Tako se razvijaju nove ideje i kreativnost pa nastaju noviji, moderniji i inovativniji elektronički sklopovi i radovi.</div>
+                        
+                        <div class="question">Kako vidite budućnost elektrotehnike?</div>
+                        <div class="answer">Budućnost elektrotehnike osobno prvenstveno vidim u bežičnom prijenosu električne energije na daljinu, te znatno većoj iskoristivosti obnovljivih izvora energije u svijetu uz drastično veće očuvanje i brigu za okoliš.</div>
+                        
+                        <div class="question">Gdje ste radili prije dolaska u našu školu?</div>
+                        <div class="answer">Prije ove škole podučavao sam u jednoj drugoj srednjoj školi u Zagrebu, a prije samog dolaska u Zagreb predavao sam u nekoliko osnovnih škola tehničku kulturu i informatiku u mom rodnom Osijeku.</div>
+                        
+                        <div class="question">Da niste profesor elektrotehnike, čime biste se voljeli baviti u životu?</div>
+                        <div class="answer">Da nisam profesor, vjerojatno bih radio izravno u struci unutar privatnog sektora, u kojemu na samom početku nakon završetka studija nisam mogao odmah dobiti posao jer su gotovo svi poslodavci tražili zaposlenike s višegodišnjim radnim iskustvom. A tko zna, možda bih se bavio i nečim sasvim trećim. Nikad ne znamo što točno nosi sutra…</div>
+                    </div>
+
+                    <div class="modal-meta">
+                        <span>Razgovor vodili: M. Drobnjak, J. Križanec i J. Đebro (1.b1)</span>
+                        <span>Rubrika: Zvijezda hodnika</span>
+                    </div>
+                `
+            },
+            7: {
+                title: "Kreativnost u školi: I u kreativnosti ima matematike",
+                heroImage: "Cvjetni hodnik.jpg",
+                content: `
+                    <p>Razgovarali smo s profesoricom matematike <strong>Jasnom Sušac-Peičić</strong> koja sa svojom vrijednom kreativnom ekipom svakodnevno vizualno uljepšava i podiže našu školu.</p>
+                    
+                    <div class="qa-section">
+                        <div class="question">Kako ste došli na ideju da pokrenete Kreativnu radionicu u školi?</div>
+                        <div class="answer">Sve je počelo u jesen 2024. godine kada je prof. Katarina Svalina zajedno s kolegicom iz Cestovne škole osmislila i pokrenula sjajan projekt <em>Srednjoškolski advent na Kennedyjevom trgu</em>. To je bila humanitarna akcija u kojoj srednjoškolci izradom prigodnih ukrasa i njihovom prodajom prikupljaju donacije koje daruju onima kojima je to najpotrebnije. Kad nam je kolegica Svalina na Nastavničkom vijeću predstavila projekt i pozvala nas da mu se pridružimo, odmah sam se priključila jer oduvijek privatno volim raditi rukama. Tako je počelo... Okupila se mala, ali iznimno vrijedna skupina učenica iz naše škole i nakon što je izrada ukrasa za advent završila, samo smo nastavili izrađivati ukrase i kontinuirano uređivati naš školski prostor.</div>
+                        
+                        <div class="question">Koliko dugo već aktivno djeluje Kreativna radionica?</div>
+                        <div class="answer">Evo sada već punu drugu školsku godinu za redom... Okupljamo se znatno češće u jesen jer imamo jako puno posla oko priprema za adventski sajam, s obzirom na to da je potrebno izraditi mnoštvo ukrasa za prodaju na štandu. Tijekom ostatka godine sastajemo se nešto rjeđe, ovisno o trenutnim idejama i potrebama za tematskim ukrašavanjem škole.</div>
+                        
+                        <div class="question">Koji Vam je projekt do sada najdraži i najuspješniji?</div>
+                        <div class="answer text-success"><strong>Najdraži mi je definitivno Cvjetni hodnik.</strong> Puno puta u radionici nešto pokušamo napraviti pa nam ne uspije u potpunosti onako kako smo zamislili u glavi i ne budemo do kraja zadovoljni rezultatom... A za ovaj naš hodnik mislim da je ispao baš jako uspješan projekt jer se sjajno uklopio u sivi prostor i potpuno ga oplemenio. Donio je pravu živost s dolaskom proljeća i nekako kao da je probudio optimizam u svima nama koji tuda prolazimo.</div>
+                        
+                        <div class="question">Da u ovom trenutku možete birati između čiste matematike i Kreativne radionice, što biste izabrali i zašto?</div>
+                        <div class="answer">Iako istinski volim matematiku i ona me kroz cijeli život naučila strukturirano misliti, sada, nakon više od 30 godina predanog rada u razredu, izabrala bih – Kreativnu radionicu! Nastavnički posao u razredu postaje sve zahtjevniji i teži, a dodatni problem je u tome što mi, nastavnici, koliko god se trudili što bolje objasniti gradivo, često ne vidimo odmah opipljive rezultate vlastitoga rada.... Zato ja uzmem u ruke boje, škare, prirodne grančice, papir, filc... i odmah napravim nešto korisno i, nadam se, lijepo za sve.</div>
+                        
+                        <div class="question">Na samu riječ „matematika“ što biste u radionici prvo izradili ili nacrtali?</div>
+                        <div class="answer">Matematika me ne asocira na samo jednu konkretnu stvar, nego zapravo na – sve oko nas. Puno je više matematike svuda oko nas nego što smo uopće svjesni u svakodnevici... Baš mi je rad u Kreativnoj radionici to zorno potvrdio: da bi bilo koji predmet ili ukras skladno izgledao, potrebno je toliko preciznog mjerenja, procjene, omjera, izračuna i točnosti... a upravo nas svemu tome uči baš matematika!</div>
+                    </div>
+
+                    <div class="modal-meta">
+                        <span>Suautor: Novinarska sekcija</span>
+                        <span>Rubrika: Kreativna radionica</span>
+                    </div>
+                `
+            },
+            8: {
+                title: "FILM: "How it used to be" osvojio publiku i žiri",
+                heroImage: "Slika - film.jpg",
+                content: `
+                    <div class="highlight-box">Naš film osvojio je visoko 2. mjesto stručnog žirija i uvjerljivo 1. mjesto prema glasovima brojne publike!</div>
+                    <p>Kratki igrani film pod nazivom <strong>"How it used to be"</strong> ostvario je povijesni rezultat osvojivši drugo mjesto na prestižnom filmskom natjecanju TEC Filozofskog fakulteta u Zagrebu.</p>
+                    <p>Film su u potpunosti osmislili, režirali i snimili kreativni učenici našeg 1.b1 razreda: <strong>Mislav Karoglan, Leon Tuškan, Matej Vrban i Patrik Žejinski</strong>. Iz prve ruke i u razgovoru na hodniku doznali smo da su se pritom odlično zabavili, ali i naučili osnove filmske montaže.</p>
+                    <p>Matej nam je prepričao dojmove s festivala: <em>"Na natjecanju smo morali biti rano ujutro, već u 9:00 sati. Bilo je organizirano dosta različitih i jakih kategorija: od žustre debate, autorskih pjesama pa do drame... Za vrijeme jednosatnih pauza između blokova mogli smo na miru pogledati radove i ideje drugih učenika iz cijele regije."</em></p>
+                    <p><em>"Mi smo se natjecali u glavnoj kategoriji filma. Ukupno je u konkurenciji bilo prijavljeno čak petnaest naslova. Budući da smo se natjecali u kategoriji srednjih škola, naš se rad prezentirao i gledao među posljednjima u dvorani. Samu prezentaciju pred publikom odradili smo vrhunski, a tu se posebno istaknuo Mislav. Suci i žiri su bili izuzetno zadovoljni i to nam je sigurno još malo dodatno poguralo film prema samom vrhu."</em></p>
+                    <p>U konačnici, ekipa je osvojila visoko 2. mjesto prema odluci stručnog žirija te apsolutno <strong>prvo mjesto publike s osvojena čak 263 glasa!</strong> <em>"To stvarno nitko od nas u razredu nije očekivao! Bilo je nevjerojatno zabavno i neki od nas ozbiljno razmišljaju da se filmom i režijom nastave baviti i u budućnosti"</em>, zaključuje Patrik.</p>
+                    
+                    <h4 style="margin-top:20px; margin-bottom:10px;">Trenuci s natjecanja na fakultetu:</h4>
+                    <div class="gallery-container">
+                        <div class="gallery-item"><img src="Slika - film.jpg" alt="Ekipa u dvorani"></div>
+                        <div class="gallery-item"><img src="Film slika 2.jpg" alt="Dodjela nagrada"></div>
+                    </div>
+
+                    <div class="modal-meta">
+                        <span>Autor: Patrik Žejinski, 1.b1</span>
+                        <span>Rubrika: Kultura i umjetnost</span>
+                    </div>
+                `
+            },
+            9: {
+                title: "UI/AI – prednosti i mane u modernoj školi",
+                heroImage: "240_F_485241075_B97HJPtsCLaHVOMGBtNyQm6LzzZtGUmh.jpg",
+                content: `
+                    <div class="highlight-box" style="font-weight: bold; color: var(--primary-color);">Inteligentno s umjetnom inteligencijom! Umjetna inteligencija nije „šalabahter“, nego nevjerojatna mogućnost učenja i osobnog razvoja.</div>
+                    <p>Umjetna inteligencija (UI) sve brže i dublje ulazi u naše svakodnevne živote i školske klupe. Učenici danas masovno koriste velike jezične modele i UI alate kako bi si olakšali učenje teškog gradiva, brže riješili složene zadatke ili bolje vizualizirali gradivo koje im nastavnici predaju.</p>
+                    <p>Ipak, otvara se ključno pitanje: pomaže li nam umjetna inteligencija stvarno da dugoročno usvojimo znanje ili samo mehanički prepisujemo gotove odgovore bez imalo vlastitog razumijevanja?</p>
+                    <p><strong>Prednosti i pozitivna strana:</strong> Umjetna inteligencija uistinu može biti od goleme pomoći. Svaki učenik može u sekundi dobiti personalizirano objašnjenje nekog nejasnog pojma ili rješenje matematičkog zadatka korak po korak. Na taj se način uvelike ubrzava sam proces učenja. Ovo je posebno važno učenicima koji imaju poteškoća s organizacijom i ne znaju dobro rasporediti svoje slobodno vrijeme.</p>
+                    <p><strong>Mane i opasnosti:</strong> Pravi problem i kontraefekt nastaju kada se umjetna inteligencija koristi na potpuno pogrešan način – isključivo za lijeno prepisivanje domaćih zadaća, lektira i online testova. U tom specifičnom slučaju učenik zapravo ne uči apsolutno ništa, nego samo prepisuje servirane činjenice bez ikakvog kritičkog razmišljanja i obrade informacija.</p>
+                    <p>Mnogi nastavnici opravdano upozoravaju učenike da preveliko i nekritičko oslanjanje na UI tehnologiju može značajno smanjiti kognitivne sposobnosti, samostalnost u radu te kreativnost. Međutim, potpuno je nerealno i nemoguće očekivati da će doći do zabrane UI u školama. Tehnologija je posvuda oko nas i zato je jedina ispravna stvar naučiti kako je koristiti na pametan i koristan način!</p>
+                    
+                    <div class="modal-meta">
+                        <span>Autorica: Tia Genzić</span>
+                        <span>Rubrika: Tehnologija i budućnost</span>
+                    </div>
+                `
+            },
+            10: {
+                title: "ŠIZ – mali predmet koji donosi velike promjene",
+                heroImage: "download.jpg",
+                content: `
+                    <div class="highlight-box">Učenici naše škole kroz ŠIZ ne raspravljaju samo pasivno o problemima, već aktivno i složno rade na njihovom izravnom rješavanju u zajednici!</div>
+                    <p>U našoj se školi već četiri uspješne godine zaredom provodi <strong>ŠIZ (Škola i zajednica)</strong> – izvannastavna aktivnost koja učenicima daje jedinstvenu priliku da izađu iz krutih okvira klasične teorijske nastave i izravno se uključe u rješavanje stvarnih problema svog kvarta i škole. Umjesto dosadnog slušanja teorije, ovdje je sav naglasak na konkretnom djelovanju.</p>
+                    <p>ŠIZ snažno potiče učenike na kritičko razmišljanje, istraživanje i akciju. Kako nam objašnjava voditeljica i profesorica <strong>Katarina Janković</strong>, glavni cilj nikada nije bio samo sjediti i pričati o tome što ne valja, već pronaći načine kako to popraviti.</p>
+                    <p><em>„Cilj je da ne sjedimo pasivno u razredu i samo pričamo, nego da pokušamo pronaći način kako probleme stvarno riješiti – izravnim kontaktiranjem institucija, slanjem dopisa i razgovorom s ljudima koji mogu pomoći“</em>, istaknula nam je ponosno profesorica Janković.</p>
+                    <p>Tijekom proteklih godina učenici su se bavili različitim i vrlo važnim temama – od podizanja opće kvalitete života u školi pa sve do zaštite napuštenih životinja. U sklopu tih aktivnosti provodili su stručne ankete, istraživali komunalne probleme i organizirali uspješne humanitarne akcije.</p>
+                    <p><strong>Uređenje školskog atrija:</strong> Kao najdraži projekt ističe se kompletno uređenje zapuštenog školskog atrija. Učenici su potpuno sami osmislili moderni izgled prostora, pronašli sponzorske donacije za materijal i vlastitim ga rukama i radom uredili u ugodnu zonu za odmor. <em>„Bili smo prljavi kao mali svinjci tijekom radova, ali bilo nam je nevjerojatno super!“</em>, kroz smijeh se prisjeća prof. Janković.</p>
+                    <p>Ove školske godine fokus grupe je na ovisničkim ponašanjima kod mladih, a posebice na modernoj digitalnoj ovisnosti o ekranima i društvenim mrežama. U planu su stručne edukacije, ali i zanimljivi izazovi poput provođenja cijelog dana bez upaljenog mobitela. ŠIZ uključuje i odličnu suradnju s drugim školama diljem Hrvatske, kao i razne izlete koji dodatno povezuju učenike.</p>
+                    <p><em>„Učenicima ne treba uvijek sve dati gotovo i na pladnju. Kada su istinski motivirani, oni sami nevjerojatno brzo pronađu genijalna rješenja“</em>, nastavlja prof. Janković i za kraj naglašava važnu ulogu mladih u društvu: <strong>„Mladi su ti koji jedini mogu promijeniti društvo na bolje, a ŠIZ im daje priliku da to napokon i pokušaju.“</strong></p>
+                    
+                    <div class="modal-meta">
+                        <span>Autori: Tia Genzić i David Ćuća</span>
+                        <span>Rubrika: Škola i zajednica</span>
+                    </div>
+                `
+            }
+        };
+
+        // Funkcija za otvaranje modalnog prozora s tekstom članka
+        function openArticle(id) {
+            const article = articlesData[id];
+            if (!article) return;
+
+            document.getElementById('modalTitle').innerText = article.title;
+            document.getElementById('modalHero').style.backgroundImage = `url('${article.heroImage}')`;
+            document.getElementById('modalHero').style.backgroundSize = 'cover';
+            document.getElementById('modalHero').style.backgroundPosition = 'center';
+            
+            // Sakrij unutarnji img ako postoji ili ga zamijeni praznim
+            document.getElementById('modalBody').innerHTML = article.content;
+            
+            document.getElementById('articleModal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Spriječi skrolanje pozadine
+        }
+
+        // Funkcija za zatvaranje modala
+        function closeModal() {
+            document.getElementById('articleModal').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Vrati skrolanje
+        }
+
+        // Zatvaranje modala klikom izvan sadržaja
+        window.onclick = function(event) {
+            const modal = document.getElementById('articleModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Funkcija za filtriranje artikala po kategorijama
+        function filterCategory(category, button) {
+            // Promijeni aktivnu klasu na gumbima
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            // Sakrij ili prikaži kartice članaka
+            const cards = document.querySelectorAll('.article-card');
+            cards.forEach(card => {
+                if (category === 'sve') {
+                    card.style.display = 'flex';
+                } else {
+                    if (card.getAttribute('data-category') === category) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
